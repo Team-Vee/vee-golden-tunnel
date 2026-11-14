@@ -265,6 +265,7 @@ function PAL(){return theme==='light'?
 function mkArt(pt){
   var P=PAL(),W=pt?900:1600,H=pt?1600:900,u=Math.min(W,H)/900,out=[],x,TAU=Math.PI*2;
   function rr(a,b,w,h,r){x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath()}
+  function ovalPortrait(a,b,w,h){x.beginPath();x.ellipse(a+w/2,b+h/2,w/2,h/2,0,0,TAU);x.closePath()}
   function arch(a,b,w,h){var r=w/2;x.beginPath();x.moveTo(a,b+r);x.arc(a+r,b+r,r,Math.PI,0);x.lineTo(a+w,b+h-20*u);x.arcTo(a+w,b+h,a+w-20*u,b+h,20*u);x.lineTo(a+20*u,b+h);x.arcTo(a,b+h,a,b+h-20*u,20*u);x.closePath()}
   function glow(cx,cy,r,col,al){var g=x.createRadialGradient(cx,cy,0,cx,cy,r);g.addColorStop(0,'rgba('+col+','+al+')');g.addColorStop(1,'rgba('+col+',0)');x.fillStyle=g;x.fillRect(cx-r,cy-r,r*2,r*2)}
   function scene(seed,fn){
@@ -283,18 +284,18 @@ function mkArt(pt){
   function dash(x1,y1,x2,y2,col,w,d){x.save();x.setLineDash([d*u,d*.7*u]);x.strokeStyle=col;x.lineWidth=w*u;x.beginPath();x.moveTo(x1,y1);x.lineTo(x2,y2);x.stroke();x.restore()}
   var CX=W/2,CY=H*.4;
 
-  /* 1 — Vee в правоъгълна рамка */
+  /* 1 — Vee в овална рамка */
   scene(1,function(){
     var aw=Math.min(W*.56,H*.42),ah=Math.min(aw*(PH?PH.naturalHeight/PH.naturalWidth:1.28),H*.58),ax=CX-aw/2,ay=Math.max(H*.14,CY-ah/2);
     for(var k=1;k<=6;k++){x.strokeStyle='rgba('+P.g+','+(.3-k*.04)+')';x.lineWidth=2*u;x.beginPath();x.arc(CX,CY,ah*.5+k*58*u,0,TAU);x.stroke()}
     candles(W*.03,H*.16,W*.17,H*.46,9,5,1.5,9,.55);candles(W*.8,H*.2,W*.17,H*.42,9,6,-1,9,.55);
     glow(CX,CY,ah*.8,P.glow,P.day?.5:.4);
-    x.save();rr(ax,ay,aw,ah,18*u);x.shadowColor='rgba('+P.glow+',.6)';x.shadowBlur=50*u;x.fillStyle=P.panel;x.fill();x.restore();
-    x.save();rr(ax,ay,aw,ah,18*u);x.clip();
-    if(PH){var iw=PH.naturalWidth,ih=PH.naturalHeight,scale=Math.min(aw/iw,ah/ih),dw=iw*scale,dh=ih*scale;x.fillStyle=P.panel;x.fillRect(ax,ay,aw,ah);x.drawImage(PH,ax+(aw-dw)/2,ay+(ah-dh)/2,dw,dh)}
+    x.save();ovalPortrait(ax,ay,aw,ah);x.shadowColor='rgba('+P.glow+',.6)';x.shadowBlur=50*u;x.fillStyle=P.panel;x.fill();x.restore();
+    x.save();ovalPortrait(ax,ay,aw,ah);x.clip();
+    if(PH){var iw=PH.naturalWidth,ih=PH.naturalHeight,scale=Math.min(aw/iw,ah/ih)*.86,dw=iw*scale,dh=ih*scale;x.fillStyle=P.panel;x.fillRect(ax,ay,aw,ah);x.drawImage(PH,ax+(aw-dw)/2,ay+(ah-dh)/2,dw,dh)}
     else{x.fillStyle=P.gold;x.font='600 '+(ah*.5)+'px "Cormorant Garamond",serif';x.textAlign='center';x.fillText('V',CX,CY+ah*.17)}
     x.restore();
-    x.save();rr(ax,ay,aw,ah,18*u);x.lineWidth=5*u;var gg=x.createLinearGradient(ax,ay,ax+aw,ay+ah);gg.addColorStop(0,'#fff3d2');gg.addColorStop(.5,P.gold);gg.addColorStop(1,'#a8681f');x.strokeStyle=gg;x.stroke();x.restore();
+    x.save();ovalPortrait(ax,ay,aw,ah);x.lineWidth=5*u;var gg=x.createLinearGradient(ax,ay,ax+aw,ay+ah);gg.addColorStop(0,'#fff3d2');gg.addColorStop(.5,P.gold);gg.addColorStop(1,'#a8681f');x.strokeStyle=gg;x.stroke();x.restore();
   });
   /* 2 — Групата: споделен екран */
   scene(2,function(){
