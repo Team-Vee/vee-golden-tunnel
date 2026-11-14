@@ -283,18 +283,18 @@ function mkArt(pt){
   function dash(x1,y1,x2,y2,col,w,d){x.save();x.setLineDash([d*u,d*.7*u]);x.strokeStyle=col;x.lineWidth=w*u;x.beginPath();x.moveTo(x1,y1);x.lineTo(x2,y2);x.stroke();x.restore()}
   var CX=W/2,CY=H*.4;
 
-  /* 1 — Vee в златна арка */
+  /* 1 — Vee в правоъгълна рамка */
   scene(1,function(){
-    var aw=Math.min(W*.56,H*.46),ah=aw*1.28,ax=CX-aw/2,ay=CY-ah/2;
+    var aw=Math.min(W*.56,H*.42),ah=Math.min(aw*(PH?PH.naturalHeight/PH.naturalWidth:1.28),H*.58),ax=CX-aw/2,ay=Math.max(H*.14,CY-ah/2);
     for(var k=1;k<=6;k++){x.strokeStyle='rgba('+P.g+','+(.3-k*.04)+')';x.lineWidth=2*u;x.beginPath();x.arc(CX,CY,ah*.5+k*58*u,0,TAU);x.stroke()}
     candles(W*.03,H*.16,W*.17,H*.46,9,5,1.5,9,.55);candles(W*.8,H*.2,W*.17,H*.42,9,6,-1,9,.55);
     glow(CX,CY,ah*.8,P.glow,P.day?.5:.4);
-    x.save();arch(ax,ay,aw,ah);x.shadowColor='rgba('+P.glow+',.6)';x.shadowBlur=50*u;x.fillStyle=P.panel;x.fill();x.restore();
-    x.save();arch(ax,ay,aw,ah);x.clip();
-    if(PH){var iw=PH.naturalWidth,ih=PH.naturalHeight,sw,sh;if(iw/ih>aw/ah){sh=ih;sw=sh*aw/ah}else{sw=iw;sh=sw*ah/aw}var sx=Math.max(0,Math.min(iw-sw,.37*iw-sw/2)),sy=Math.max(0,Math.min(ih-sh,.45*ih-sh/2));x.drawImage(PH,sx,sy,sw,sh,ax,ay,aw,ah)}
+    x.save();rr(ax,ay,aw,ah,18*u);x.shadowColor='rgba('+P.glow+',.6)';x.shadowBlur=50*u;x.fillStyle=P.panel;x.fill();x.restore();
+    x.save();rr(ax,ay,aw,ah,18*u);x.clip();
+    if(PH){var iw=PH.naturalWidth,ih=PH.naturalHeight,scale=Math.min(aw/iw,ah/ih),dw=iw*scale,dh=ih*scale;x.fillStyle=P.panel;x.fillRect(ax,ay,aw,ah);x.drawImage(PH,ax+(aw-dw)/2,ay+(ah-dh)/2,dw,dh)}
     else{x.fillStyle=P.gold;x.font='600 '+(ah*.5)+'px "Cormorant Garamond",serif';x.textAlign='center';x.fillText('V',CX,CY+ah*.17)}
     x.restore();
-    x.save();arch(ax,ay,aw,ah);x.lineWidth=5*u;var gg=x.createLinearGradient(ax,ay,ax+aw,ay+ah);gg.addColorStop(0,'#fff3d2');gg.addColorStop(.5,P.gold);gg.addColorStop(1,'#a8681f');x.strokeStyle=gg;x.stroke();x.restore();
+    x.save();rr(ax,ay,aw,ah,18*u);x.lineWidth=5*u;var gg=x.createLinearGradient(ax,ay,ax+aw,ay+ah);gg.addColorStop(0,'#fff3d2');gg.addColorStop(.5,P.gold);gg.addColorStop(1,'#a8681f');x.strokeStyle=gg;x.stroke();x.restore();
   });
   /* 2 — Групата: споделен екран */
   scene(2,function(){
@@ -351,7 +351,7 @@ function mkArt(pt){
     dash(lx,ly,ex,ly,P.gold,3,12);x.strokeStyle=P.up;x.lineWidth=3*u;x.strokeRect(lx,ly-bh*.26,ex-lx,bh*.26);x.strokeStyle=P.dn;x.strokeRect(lx,ly,ex-lx,bh*.12);
     glow(lx,ly,70*u,P.glow,.8);x.fillStyle=P.gold;x.beginPath();x.moveTo(lx,ly);x.lineTo(lx-26*u,ly+22*u);x.lineTo(lx-26*u,ly-22*u);x.closePath();x.fill();
     function bubble(bx2,by2,w,h,tail){x.save();rr(bx2,by2,w,h,h/2);x.fillStyle=P.panel;x.shadowColor='rgba('+P.glow+',.5)';x.shadowBlur=24*u;x.fill();x.restore();x.save();rr(bx2,by2,w,h,h/2);x.lineWidth=2.5*u;x.strokeStyle=P.gold;x.stroke();x.restore();x.fillStyle=P.gold;for(var i=0;i<3;i++){x.beginPath();x.arc(bx2+w/2+(i-1)*22*u,by2+h/2,6*u,0,TAU);x.fill()}}
-    bubble(W*(pt?.1:.14),by+bh+(pt?60:30)*u,170*u,70*u);bubble(W*(pt?.5:.3),by+bh+(pt?150:70)*u,190*u,70*u);
+    bubble(W*(pt?.08:.14),H*.12,170*u,70*u);bubble(W*(pt?.55:.58),H*.24,190*u,70*u);
   });
   /* 7 — Психология: ЕКГ, което се успокоява */
   scene(7,function(){
