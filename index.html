@@ -120,6 +120,8 @@ ul.tm li{display:flex;gap:10px}ul.tm li::before{content:"◆";color:var(--gold);
 @media(max-width:700px){#res{width:auto;align-self:stretch}#hint{max-width:245px}#screenNav{gap:8px;padding:6px 8px}#screenNav button{font-size:.72rem;padding:10px}#txt h1{font-size:clamp(2.5rem,10vw,4.5rem)}#txt p.m{font-size:1.1rem}}
 @media(prefers-reduced-motion:reduce){.liveDot,#ring::after{animation:none}}
 #heroJoinRow[hidden]{display:none}
+#fs{padding:11px 18px;border:1px solid var(--gold);border-radius:99px;background:rgba(233,194,122,.08);color:var(--gold);cursor:pointer}
+#fs:hover{background:rgba(233,194,122,.18)}
 </style>
 </head>
 <body>
@@ -144,7 +146,7 @@ ul.tm li{display:flex;gap:10px}ul.tm li::before{content:"◆";color:var(--gold);
   <ul class="tm" id="tms"></ul>
   <div class="row"><button class="main" id="pay"></button></div>
   <div class="row"><a href="https://www.instagram.com/vee_castello/" target="_blank" rel="noopener">Instagram</a><a href="https://team-vee.com/" target="_blank" rel="noopener">team-vee.com</a><a href="mailto:hello@team-vee.com">hello@team-vee.com</a></div>
-  <div class="sub" id="fs"></div>
+  <button type="button" class="sub" id="fs"></button>
   <div class="row" id="shr"></div>
   <p class="risk" id="risk"></p>
   <div class="row" style="margin-top:14px"><button id="again"></button></div>
@@ -177,7 +179,7 @@ var S=[
 {root:329.63,bg:{k:'IV · Изчакваме',t:'Изчакваме',m:'Когато условията не са подходящи, търпеливо чакаме. Не всяка сесия завършва със сделка.'},en:{k:'IV · Wait',t:'Wait',m:'When conditions are not right, we patiently wait. Not every session ends in a trade.'}},
 {root:349.23,bg:{k:'V · Обсъждаме',t:'Обсъждаме',m:'Когато се появи възможност, обсъждаме възможен вход — заедно.'},en:{k:'V · Discuss',t:'Discuss',m:'When an opportunity appears, we discuss a possible entry — together.'}},
 {root:392,bg:{k:'VI · Психология',t:'Спокойствие',m:'„Емоциите и психологията са ключова част от моето обучение.“ — Vee, седма година в трейдинга.'},en:{k:'VI · Psychology',t:'Calm',m:'“Emotions and psychology are a key part of my training.” — Vee, seventh year in trading.'}},
-{root:523.25,final:true,bg:{k:'ФИНАЛ · ЦЕНИ',t:'Присъедини се към Златния час.',m:'Месечен абонамент, който се подновява автоматично всеки месец.'},en:{k:'FINALE · PRICING',t:'Join The Golden Hour.',m:'A monthly subscription that renews automatically every month.'}}];
+{root:523.25,final:true,bg:{k:'ФИНАЛ · ЦЕНИ',t:'Присъедини се към „Златният час“.',m:'Месечен абонамент, който се подновява автоматично всеки месец.'},en:{k:'FINALE · PRICING',t:'Join The Golden Hour.',m:'A monthly subscription that renews automatically every month.'}}];
 var N=S.length;
 var UI={bg:{h0:'Натисни и задръж върху графиката, за да влезеш',h1:'Задръж — усети как те дърпа',h2:'Вече си в тунела…',skip:'Влез',fs:'Сподели пътешествието',again:'Пътувай отново',copy:'Копирай линк',copied:'Линкът е копиран',
  p0:'за учениците на Vee',p1:'на месец',p2:'редовна цена · след старта',pay:'Влез в групата сега',info:'Искам информация за старта',nopay:'Плащането се активира скоро — остави имейл за информация.',
@@ -450,8 +452,9 @@ var dots=$('#dots');for(var di=0;di<N;di++){dots.appendChild(document.createElem
 function setCounter(){$('#cn').textContent=('0'+(cur+1)).slice(-2);var ds=dots.children;for(var i=0;i<N;i++)ds[i].classList.toggle('on',i<=cur)}
 function setText(){
   var L=S[cur][lang],f=S[cur].final,F=S[N-1][lang],U=UI[lang];
-  $('#tk').textContent=L.k;$('#tt').textContent=L.t;if(cur===1){var badge=document.createElement('span');badge.className='liveBadge';badge.innerHTML='<span class="liveDot" aria-hidden="true"></span>LIVE';$('#tt').appendChild(badge)}$('#tm').textContent=f?'':L.m;
+  $('#tk').textContent=L.k;$('#tt').textContent=L.t;$('#tm').textContent=f?'':L.m;
   $('#fk').textContent=F.k;$('#ft').textContent=F.t;$('#fm').textContent=F.m;
+  ['#tt','#ft'].forEach(function(id){var badge=document.createElement('span');badge.className='liveBadge';badge.innerHTML='<span class="liveDot" aria-hidden="true"></span>LIVE';$(id).appendChild(badge)});
   $('#p1').textContent=U.p1;$('#pay').textContent=U.pay;$('#heroJoin').textContent=U.pay;$('#heroJoinRow').hidden=cur!==0;
   $('#tms').innerHTML=U.tm.map(function(x){return'<li>'+x+'</li>'}).join('');$('#risk').textContent=U.risk;
   $('#fs').textContent=U.fs;$('#again').textContent=U.again;updateNav();
@@ -468,6 +471,7 @@ function buildShare(){var u=encodeURIComponent(pageUrl()),tx=encodeURIComponent(
 function copyLink(){var u=pageUrl();function fb(){var i=document.createElement('input');i.value=u;document.body.appendChild(i);i.select();try{document.execCommand('copy');toast(UI[lang].copied)}catch(e){}i.remove()}
  if(navigator.clipboard&&navigator.clipboard.writeText&&window.isSecureContext)navigator.clipboard.writeText(u).then(function(){toast(UI[lang].copied)},fb);else fb()}
 $('#bShare').onclick=function(){if(navigator.share){navigator.share({title:document.title,text:UI[lang].share,url:pageUrl()}).catch(function(){})}else copyLink()};
+$('#fs').onclick=function(){$('#bShare').onclick()};
 $('#bLang').onclick=function(){lang=lang==='bg'?'en':'bg';store.set('vtun-lang',lang);setText()};
 function applyTheme(){document.documentElement.dataset.theme=theme;document.querySelector('meta[name=theme-color]').content=theme==='dark'?'#01050a':'#fbf6ea'}
 $('#bTheme').onclick=function(){theme=theme==='dark'?'light':'dark';store.set('vtun-theme',theme);applyTheme();rebuildArt();AE.note(S[cur].root*2,.08,0,1.4,'sine')};
