@@ -122,6 +122,20 @@ ul.tm li{display:flex;gap:10px}ul.tm li::before{content:"◆";color:var(--gold);
 #heroJoinRow[hidden]{display:none}
 #fs{padding:11px 18px;border:1px solid var(--gold);border-radius:99px;background:rgba(233,194,122,.08);color:var(--gold);cursor:pointer}
 #fs:hover{background:rgba(233,194,122,.18)}
+
+/* Layout adjustments scoped to the first and last screens. */
+body[data-screen="1"] #txt .tb{max-width:min(48vw,650px)}
+body[data-screen="1"] #txt h1{font-size:clamp(2.6rem,6.6vw,5.6rem);overflow-wrap:normal}
+body[data-screen="1"] #txt p.m{font-size:clamp(1.1rem,2vw,1.5rem)}
+#fin .card{max-height:none;overflow:visible;padding:16px 24px}
+#fin h2{font-size:clamp(1.8rem,4.3vw,3.2rem)}
+#fin p.ms{margin:6px auto 8px}
+#fin .sts{margin-bottom:8px}#fin .sts div{padding:8px}
+#fin ul.tm{gap:4px;margin-bottom:8px;line-height:1.35}
+#fin .row{gap:6px;margin-top:6px}#fin .row a,#fin .row button{padding:8px 12px}
+#fin #fs{margin-top:8px;padding:8px 14px}#fin .risk{margin-top:8px}
+@media(max-width:700px){body[data-screen="1"] #txt .tb{max-width:80vw}body[data-screen="1"] #txt h1{font-size:clamp(2.3rem,8vw,3.4rem)}#fin .card{padding:12px 14px}#fin .row a,#fin .row button{font-size:.64rem;padding:7px 10px}#fin ul.tm{font-size:.72rem}}
+
 </style>
 </head>
 <body>
@@ -450,23 +464,25 @@ function toast(m){var t=$('#toast');t.textContent=m;t.classList.add('on');clearT
 /* ---------------- ИНТЕРФЕЙС ---------------- */
 var dots=$('#dots');for(var di=0;di<N;di++){dots.appendChild(document.createElement('i'))}
 function setCounter(){$('#cn').textContent=('0'+(cur+1)).slice(-2);var ds=dots.children;for(var i=0;i<N;i++)ds[i].classList.toggle('on',i<=cur)}
+function fitFinal(){var card=$('#fin .card');card.style.zoom='1';var available=Math.max(150,innerHeight-165);var natural=card.scrollHeight;if(natural>available)card.style.zoom=String(available/natural)}
+addEventListener('resize',fitFinal);
 function setText(){
   var L=S[cur][lang],f=S[cur].final,F=S[N-1][lang],U=UI[lang];
-  $('#tk').textContent=L.k;$('#tt').textContent=L.t;$('#tm').textContent=f?'':L.m;
+  document.body.dataset.screen=String(cur+1);$('#tk').textContent=cur===0?L.k.replace(/ · (НА ЖИВО|LIVE)$/,''):L.k;$('#tt').textContent=L.t;$('#tm').textContent=f?'':L.m;
   $('#fk').textContent=F.k;$('#ft').textContent=F.t;$('#fm').textContent=F.m;
-  ['#tt','#ft'].forEach(function(id){var badge=document.createElement('span');badge.className='liveBadge';badge.innerHTML='<span class="liveDot" aria-hidden="true"></span>LIVE';$(id).appendChild(badge)});
+  (cur===0?['#tk']:cur===5?[]:f?['#ft']:['#tt']).forEach(function(id){var badge=document.createElement('span');badge.className='liveBadge';badge.innerHTML='<span class="liveDot" aria-hidden="true"></span>LIVE';$(id).appendChild(badge)});
   $('#p1').textContent=U.p1;$('#pay').textContent=U.pay;$('#heroJoin').textContent=U.pay;$('#heroJoinRow').hidden=cur!==0;
   $('#tms').innerHTML=U.tm.map(function(x){return'<li>'+x+'</li>'}).join('');$('#risk').textContent=U.risk;
   $('#fs').textContent=U.fs;$('#again').textContent=U.again;updateNav();
   document.title=lang==='bg'?'Vee — Златният тунел · Forex и Злато на живо':'Vee — The Golden Tunnel · Forex & Gold live';
-  setHint();buildShare();$('#bLang').textContent=lang==='bg'?'EN':'BG';document.documentElement.lang=lang;
+  setHint();buildShare();requestAnimationFrame(fitFinal);$('#bLang').textContent=lang==='bg'?'EN':'BG';document.documentElement.lang=lang;
 }
 function updateNav(){var bg=lang==='bg';$('#back').textContent=bg?'← Назад':'← Back';$('#back').disabled=cur===0;$('#skip').hidden=!!S[cur].final;$('#skip').textContent=cur===0?(bg?'Разгледай →':'Explore →'):(bg?'Следващ екран →':'Next screen →');$('#pageCount').textContent=(cur+1)+(bg?' от ':' of ')+N;$('#ct').textContent=(bg?' от ':' of ')+N;}
 function setHint(){var U=UI[lang];$('#hint').textContent=res>.55?U.h2:res>.12?U.h1:U.h0}
 function showText(on){var t=$('#txt');if(on){t.classList.remove('show');void t.offsetWidth;t.classList.add('show')}else t.classList.remove('show')}
 function pageUrl(){return location.origin+location.pathname}
 function buildShare(){var u=encodeURIComponent(pageUrl()),tx=encodeURIComponent(UI[lang].share);
- $('#shr').innerHTML='<a target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u='+u+'">Facebook</a><a target="_blank" rel="noopener" href="https://wa.me/?text='+tx+'%20'+u+'">WhatsApp</a><a target="_blank" rel="noopener" href="viber://forward?text='+tx+'%20'+u+'">Viber</a><a target="_blank" rel="noopener" href="https://t.me/share/url?url='+u+'&text='+tx+'">Telegram</a><a target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?url='+u+'&text='+tx+'">X</a><a target="_blank" rel="noopener" href="https://www.linkedin.com/sharing/share-offsite/?url='+u+'">LinkedIn</a><a target="_blank" rel="noopener" href="https://www.reddit.com/submit?url='+u+'&title='+tx+'">Reddit</a><a href="mailto:?subject='+tx+'&body='+u+'">Email</a><button id="cpy">'+UI[lang].copy+'</button>';
+ $('#shr').innerHTML='<a target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u='+u+'">Facebook</a><a target="_blank" rel="noopener" href="https://wa.me/?text='+tx+'%20'+u+'">WhatsApp</a><a target="_blank" rel="noopener" href="viber://forward?text='+tx+'%20'+u+'">Viber</a><a target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?url='+u+'&text='+tx+'">X</a><a target="_blank" rel="noopener" href="https://www.linkedin.com/sharing/share-offsite/?url='+u+'">LinkedIn</a><a target="_blank" rel="noopener" href="https://www.reddit.com/submit?url='+u+'&title='+tx+'">Reddit</a><a href="mailto:?subject='+tx+'&body='+u+'">Email</a><button id="cpy">'+UI[lang].copy+'</button>';
  $('#cpy').onclick=copyLink}
 function copyLink(){var u=pageUrl();function fb(){var i=document.createElement('input');i.value=u;document.body.appendChild(i);i.select();try{document.execCommand('copy');toast(UI[lang].copied)}catch(e){}i.remove()}
  if(navigator.clipboard&&navigator.clipboard.writeText&&window.isSecureContext)navigator.clipboard.writeText(u).then(function(){toast(UI[lang].copied)},fb);else fb()}
@@ -497,7 +513,7 @@ function arrive(){
   var fin=S[cur].final;AE.arrive(S[cur].root,fin);flash=.8;
   addRipple(.5,.5,1);setTimeout(function(){addRipple(.5,.5,.8)},350);setTimeout(function(){addRipple(.5,.5,.6)},800);
   $('#res').style.display=fin?'none':'';
-  if(fin){setTimeout(function(){$('#fin').classList.add('on');$('#txt').style.visibility='hidden';startFinale()},400)}
+  if(fin){setTimeout(function(){$('#fin').classList.add('on');$('#txt').style.visibility='hidden';fitFinal();startFinale()},400)}
   else{$('#txt').style.visibility='';showText(true);stopFinale()}
 }
 
